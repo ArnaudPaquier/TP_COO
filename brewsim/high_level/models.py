@@ -51,7 +51,7 @@ class QuantiteIngredient(models.Model):
         return f"{self.ingredient} {self.quantite}"
 
 
-class Action(models.Models):
+class Action(models.Model):
     machine = models.Foreignkey(Machine, on_delete=models.PROTECT)
     commande = models.CharField(max_length=100)
     duree = models.IntegerField()
