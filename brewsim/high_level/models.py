@@ -32,8 +32,8 @@ class Departement(models.Model):
 
 
 class Prix(models.Model):
-    ingredient = models.Foreignkey(Ingredient, on_delete=models.PROTECT)
-    departement = models.Foreignkey(Departement, on_delete=models.PROTECT)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
+    departement = models.ForeignKey(Departement, on_delete=models.PROTECT)
     prix = models.IntegerField()
 
     def __str__(self):
@@ -44,7 +44,7 @@ class Prix(models.Model):
 
 
 class QuantiteIngredient(models.Model):
-    ingredient = models.Foreignkey(Ingredient, on_delete=models.PROTECT)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
     quantite = models.IntegerField()
 
     def __str__(self):
@@ -64,14 +64,14 @@ class Action(models.Models):
 
 class Recette(models.Model):
     nom = models.CharField(max_length=100)
-    action = models.Foreignkey(Action, on_delete=models.PROTECT)
+    action = models.ForeignKey(Action, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.nom} {self.action}"
 
 
 class Usine(models.Model):
-    departement = models.Foreignkey(Departement, on_delete=models.PROTECT)
+    departement = models.ForeignKey(Departement, on_delete=models.PROTECT)
     taille = models.IntegerField()
     machines = models.ManyToManyField(Machine)
     recettes = models.ManyToManyField(Recette)
