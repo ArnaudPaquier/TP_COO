@@ -52,7 +52,7 @@ class QuantiteIngredient(models.Model):
 
 
 class Action(models.Model):
-    machine = models.Foreignkey(Machine, on_delete=models.PROTECT)
+    machine = models.ForeignKey(Machine, on_delete=models.PROTECT)
     commande = models.CharField(max_length=100)
     duree = models.IntegerField()
     ingredients = models.ManyToManyField(QuantiteIngredient)
