@@ -98,4 +98,24 @@ class Usine(models.Model):
         total = prix_machine + prix_entrepot + prix_ingredient
         return total
 
-    # def rspr(self):
+    def rspr(self, recette, n):
+        prix_achat = 0
+        for i in recette.action.ingredients.all():
+            self.stocks.add(
+                QuantiteIngredient.objects.create(
+                    ingredient=i.ingredient, quantite=n * i.quantite
+                )
+            )
+            prix_achat += i.cost(self.departement.numero)
+        print("Prix des achats =", prix_achat)
+        #    existant = 0
+        #    for s in self.stocks.all():
+        #        print("Dans s")
+        #        if (s.ingredient == i.ingredient):
+        #            print("Dans if")
+        #            if(s.quantite < n*i.quantite):
+        #                print("Restockage")
+        #                print("new quantite", n*i.quantite)
+        #                s.quantite = n*i.quantite
+        #            existant = 1
+        #    if ( existant == 0 ):

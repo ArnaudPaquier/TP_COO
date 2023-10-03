@@ -1,6 +1,15 @@
 from django.test import TestCase
 
-from .models import Departement, Ingredient, Machine, Prix, QuantiteIngredient, Usine
+from .models import (
+    Action,
+    Departement,
+    Ingredient,
+    Machine,
+    Prix,
+    QuantiteIngredient,
+    Recette,
+    Usine,
+)
 
 # class MachineModelTests(TestCase):
 #    def test_usine_creation(self):
@@ -25,7 +34,12 @@ class UsineModelTests(TestCase):
         Prix.objects.create(ingredient=houblon, departement=hg, prix=20)
         Prix.objects.create(ingredient=orge, departement=hg, prix=10)
         houblon50 = QuantiteIngredient.objects.create(ingredient=houblon, quantite=50)
+        houblon20 = QuantiteIngredient.objects.create(ingredient=houblon, quantite=20)
         orge100 = QuantiteIngredient.objects.create(ingredient=orge, quantite=100)
+
+        brassage = Action.objects.create(machine=cuve, commande="brasser", duree=5)
+        brassage.ingredients.add(houblon20)
+        blonde = Recette.objects.create(nom="blonde", action=brassage)
 
         usine = Usine.objects.create(departement=hg, taille=50)
 
@@ -33,9 +47,20 @@ class UsineModelTests(TestCase):
         usine.machines.add(cuve)
         usine.stocks.add(houblon50)
         usine.stocks.add(orge100)
+        usine.recettes.add(blonde)
 
-        self.assertEqual(Usine.objects.first().cost(), 105_000)
+        print("><><><><><><><><><><><><><><><><><")
+        print("Ingrédients = ", usine.stocks.all())
+        print("><><><><><><><><><><><><><><><><><")
 
+        usine.rspr(usine.recettes.first(), 10)
+
+        self.assertEqual(Usine.objects.first().cost(), 109_000)
+
+        print("><><><><><><><><><><><><><><><><><")
+        print("Recette = ", usine.recettes.first())
+        print("><><><><><><><><><><><><><><><><><")
+        print("Ingrédients = ", usine.stocks.all())
         print("><><><><><><><><><><><><><><><><><")
         print("Prix Usine = ", usine.cost())
         print("><><><><><><><><><><><><><><><><><")
