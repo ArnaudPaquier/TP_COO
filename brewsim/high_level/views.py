@@ -1,9 +1,7 @@
 from json import dumps
 
 from django.http import HttpResponse
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import CreateView, DetailView
+from django.views.generic import DetailView
 
 from .models import (
     Action,
@@ -14,7 +12,6 @@ from .models import (
     QuantiteIngredient,
     Recette,
     Usine,
-    Vente,
 )
 
 
@@ -74,10 +71,17 @@ class UsineDetailView(DetailView):
         return HttpResponse(dumps(self.object.json_extended()))
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class VenteCreateView(CreateView):
-    model = Vente
+class APIDetailView(DetailView):
+    model = Departement
 
-    def post(self, request, *args, **kwargs):
-        self.object = None
-        return super().post(request, *args, **kwargs)
+    def render_to_response(self, context, **response_kwargs):
+        return HttpResponse(dumps(Usine.json_extended(), Prix.json_extended()))
+
+
+# @method_decorator(csrf_exempt, name="dispatch")
+# class VenteCreateView(CreateView):
+#    model = Vente
+#
+#    def post(self, request, *args, **kwargs):
+#        self.object = None
+#        return super().post(request, *args, **kwargs)
