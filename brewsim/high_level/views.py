@@ -2,7 +2,7 @@ from json import dumps
 
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
-from django.utils.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView, DetailView
 
 from .models import (
