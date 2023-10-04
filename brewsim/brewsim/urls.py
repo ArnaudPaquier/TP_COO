@@ -39,5 +39,5 @@ urlpatterns = [
     path("recette/<int:pk>", views.RecetteDetailView.as_view(), name="recette"),
     path("usine/<int:pk>", views.UsineDetailView.as_view(), name="usine"),
     # path("vente/<int:pk>", views.VenteCreateView.as_view(), name="vente"),
-    path("API/<int:pk>", views.APIDetailView.as_view(), name="API"),
+    # path("api/<int:pk>", views.APIDetailView.as_view(), name="api"),
 ]

@@ -71,11 +71,17 @@ class UsineDetailView(DetailView):
         return HttpResponse(dumps(self.object.json_extended()))
 
 
-class APIDetailView(DetailView):
-    model = Departement
-
-    def render_to_response(self, context, **response_kwargs):
-        return HttpResponse(dumps(Usine.json_extended(), Prix.json_extended()))
+# class APIDetailView(DetailView):
+#    model = Departement
+#
+#    def render_to_response(self, context, **response_kwargs):
+#        return HttpResponse(
+#            dumps(
+#                self.usine_set.get(
+#                ).json_extended(),
+#                self.prix_set.all().json_extended(),
+#            )
+#        )  # Probleme ici
 
 
 # @method_decorator(csrf_exempt, name="dispatch")
