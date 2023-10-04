@@ -49,9 +49,10 @@ class UsineModelTests(TestCase):
         usine.stocks.add(orge100)
         usine.recettes.add(blonde)
 
-        print("><><><><><><><><><><><><><><><><><")
-        print("Ingrédients = ", usine.stocks.all())
-        print("><><><><><><><><><><><><><><><><><")
+        print("><><><><><><><><>STOCKS<><><><><><><><><")
+        for i in usine.stocks.all():
+            print(i)
+        print("><><><><><><><><>STOCKS<><><><><><><><><")
 
         usine.rspr(usine.recettes.first(), 10)
 
@@ -60,7 +61,10 @@ class UsineModelTests(TestCase):
         print("><><><><><><><><><><><><><><><><><")
         print("Recette = ", usine.recettes.first())
         print("><><><><><><><><><><><><><><><><><")
-        print("Ingrédients = ", usine.stocks.all())
+        print("><><><><><><><><>STOCKS<><><><><><><><><")
+        for i in usine.stocks.all():
+            print(i)
+        print("><><><><><><><><>STOCKS<><><><><><><><><")
         print("><><><><><><><><><><><><><><><><><")
         print("Prix Usine = ", usine.cost())
         print("><><><><><><><><><><><><><><><><><")

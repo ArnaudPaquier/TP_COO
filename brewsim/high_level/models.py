@@ -8,6 +8,12 @@ class Ingredient(models.Model):
     def __str__(self):
         return f"{self.nom}"
 
+    def json(self):
+        return {"nom": self.nom}
+
+    def json_extended(self):
+        return self.json()
+
 
 class Machine(models.Model):
     nom = models.CharField(max_length=100)
@@ -18,6 +24,12 @@ class Machine(models.Model):
 
     def cost(self):
         return self.prix
+
+    def json(self):
+        return {"nom": self.nom, "prix": self.prix}
+
+    def json_extended(self):
+        return self.json()
 
 
 class Departement(models.Model):
@@ -30,6 +42,12 @@ class Departement(models.Model):
     def cost(self):
         return self.prix_m2
         print("Usine créé")
+
+    def json(self):
+        return {"numero": self.numero, "prix_m2": self.prix_m2}
+
+    def json_extended(self):
+        return self.json()
 
 
 class Prix(models.Model):
@@ -44,6 +62,20 @@ class Prix(models.Model):
     def cost(self):
         return self.prix
 
+    def json(self):
+        return {
+            "ingredient": self.ingredient.id,
+            "departement": self.departement.id,
+            "prix": self.prix,
+        }
+
+    def json_extended(self):
+        return {
+            "ingredient": self.ingredient.json_extended(),
+            "departement": self.departement.json_extended(),
+            "prix": self.prix,
+        }
+
 
 class QuantiteIngredient(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
@@ -55,6 +87,15 @@ class QuantiteIngredient(models.Model):
     def cost(self, dep):
         prix_ing = self.ingredient.prix_set.get(departement__numero=dep).prix
         return prix_ing * self.quantite
+
+    def json(self):
+        return {"ingredient": self.ingredient.id, "quantite": self.quantite}
+
+    def json_extended(self):
+        return {
+            "ingredient": self.ingredient.json_extended(),
+            "quantite": self.quantite,
+        }
 
 
 class Action(models.Model):
@@ -68,6 +109,28 @@ class Action(models.Model):
         return f"La {self.commande} dure {self.duree}s sur la machine"
         f" {self.machine}"
 
+    def json(self):
+        tab = []
+        for i in self.ingredients.all():
+            tab.append(i.id)
+        return {
+            "machine": self.machine.id,
+            "commande": self.commande,
+            "duree": self.duree,
+            "ingredients": tab,
+        }
+
+    def json_extended(self):
+        tab = []
+        for i in self.ingredients.all():
+            tab.append(i.json_extended())
+        return {
+            "machine": self.machine.json_extended(),
+            "commande": self.commande,
+            "duree": self.duree,
+            "ingredients": tab,
+        }
+
 
 class Recette(models.Model):
     nom = models.CharField(max_length=100)
@@ -75,6 +138,12 @@ class Recette(models.Model):
 
     def __str__(self):
         return f"Recette de {self.nom}"
+
+    def json(self):
+        return {"nom": self.nom, "action": self.action.id}
+
+    def json_extended(self):
+        return {"nom": self.nom, "action": self.action.json_extended()}
 
 
 class Usine(models.Model):
@@ -107,15 +176,49 @@ class Usine(models.Model):
                 )
             )
             prix_achat += i.cost(self.departement.numero)
-        print("Prix des achats =", prix_achat)
-        #    existant = 0
-        #    for s in self.stocks.all():
-        #        print("Dans s")
-        #        if (s.ingredient == i.ingredient):
-        #            print("Dans if")
-        #            if(s.quantite < n*i.quantite):
-        #                print("Restockage")
-        #                print("new quantite", n*i.quantite)
-        #                s.quantite = n*i.quantite
-        #            existant = 1
-        #    if ( existant == 0 ):
+        print("Prix des achats (models.Model):=", prix_achat * n, "€")
+
+    def json(self):
+        tabm = []
+        tabr = []
+        tabs = []
+
+        for m in self.machines.all():
+            tabm.append(m.id)
+        for r in self.recettes.all():
+            tabr.append(r.id)
+        for s in self.stocks.all():
+            tabs.append(s.id)
+
+        return {
+            "departement": self.departement.id,
+            "taille": self.taille,
+            "machines": tabm,
+            "recettes": tabs,
+            "stocks": tabs,
+        }
+
+    def json_extended(self):
+        tabm = []
+        tabr = []
+        tabs = []
+
+        for m in self.machines.all():
+            tabm.append(m.json())
+        for r in self.recettes.all():
+            tabr.append(r.json_extended())
+        for s in self.stocks.all():
+            tabs.append(s.json_extended())
+
+        return {
+            "departement": self.departement.json_extended(),
+            "taille": self.taille,
+            "machines": tabm,
+            "recettes": tabs,
+            "stocks": tabs,
+        }
+
+
+class Vente(models.Model):
+    departement = models.ForeignKey(Departement, on_delete=models.PROTECT)
+    benefices = models.IntegerField()
