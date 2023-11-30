@@ -3,6 +3,7 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 
+
 using namespace std;
 using json = nlohmann::json;
 
@@ -60,6 +61,9 @@ class Machine
 		void Affichage()
 		{
 			cout << "Machine : " << nom << "  prix : " << prix << endl;
+		}
+		friend ostream& operator<<(ostream& out, const Machine& p) {
+			return out << p.nom;
 		}
 
 };
@@ -141,19 +145,111 @@ class QuantiteIngredient
 
 
 
+class Action
+{
+	private:
+		int duree;
+		unique_ptr<Machine> machine;
+		string commande;
+		vector<unique_ptr<Ingredient>> ingredients;
+
+	public:
+
+		Action(int id)
+		{
+			int n;
+
+			cpr::Response r = cpr::Get(cpr::Url{"http://localhost:8000/action/"+to_string(id)});
+			json m = json::parse(r.text);
+
+			duree = m["duree"];
+			machine = make_unique<Machine>(m["machine"]);
+			commande = m["commande"];
+
+			for(const auto &i: m["ingredients"])
+				ingredients.push_back(make_unique<Ingredient>(i));
+
+		}
+		friend ostream& operator<<(ostream& out, const Action& q) {
+			return out << "La commade " << q.commande << " dure " << q.duree << "s sur la machine " << *q.machine ;
+		}
+};
+
+
+class Recette
+{
+	private:
+		string nom;
+	  unique_ptr<Action> action ;
+
+	public:
+
+		Recette(int id)
+		{
+			cpr::Response r = cpr::Get(cpr::Url{"http://localhost:8000/recette/"+to_string(id)});
+			json m = json::parse(r.text);
+
+			action = make_unique<Action>(m["action"]);
+			nom = m["nom"];
+		}
+		friend ostream& operator<<(ostream& out, const Recette& q) {
+			return out << "Pour faire la recette " << q.nom << ", il faut " << *q.action ;
+		}
+};
+
+class Usine
+{
+	private:
+		unique_ptr<Departement> departement;
+		int taille;
+		vector<unique_ptr<Machine>> machines;
+		vector<unique_ptr<Recette>> recettes;
+		vector<unique_ptr<QuantiteIngredient>> stocks;
+
+	public:
+
+		Usine(int id)
+		{
+			cpr::Response r = cpr::Get(cpr::Url{"http://localhost:8000/usine/"+to_string(id)});
+			json m = json::parse(r.text);
+
+			departement = make_unique<Departement>(m["departement"]);
+			taille = m["taille"];
+
+			for(const auto &i: m["machines"])
+				machines.push_back(make_unique<Machine>(m["machines"]));
+
+			for(const auto &i: m["recettes"])
+				recettes.push_back(make_unique<Recette>(m["recettes"]));
+
+			for(const auto &i: m["stocks"])
+				stocks.push_back(make_unique<QuantiteIngredient>(m["stocks"]));
+
+
+
+		}
+		friend ostream& operator<<(ostream& out, const Usine& p) {
+			return out << "L'usine du département" << *p.departement << " de taille " << p.taille << "m²";
+		}
+};
+
 
 auto main() -> int
 {
 	//Departement HauteGaronne{31, 1000};
 	//HauteGaronne.Affichage();
 
-	cpr::Response r = cpr::Get(cpr::Url{"http://localhost:8000/prix/1"});
+	cpr::Response r = cpr::Get(cpr::Url{"http://localhost:8000/machine/1"});
 	json m = json::parse(r.text);
 
-	Prix lolo{1};
-	QuantiteIngredient tdfe{1};
-	cout << lolo << endl;
-	cout << tdfe << endl;
+	cout << m << endl;
+
+
+
+	//Prix lolo{1};
+	//QuantiteIngredient tdfe{1};
+	//cout << lolo << endl;
+	//cout << tdfe << endl;
 
 
 	/*Departement HauteGaronne{m};
